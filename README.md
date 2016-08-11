@@ -1,8 +1,8 @@
 Apache Spark on Docker
 ==========
 
-[![DockerPulls](https://img.shields.io/docker/pulls/sequenceiq/spark.svg)](https://registry.hub.docker.com/u/sequenceiq/spark/)
-[![DockerStars](https://img.shields.io/docker/stars/sequenceiq/spark.svg)](https://registry.hub.docker.com/u/sequenceiq/spark/)
+[![DockerPulls](https://img.shields.io/docker/pulls/sequenceiq/spark.svg)](https://registry.hub.docker.com/u/pierremage/spark/)
+[![DockerStars](https://img.shields.io/docker/stars/sequenceiq/spark.svg)](https://registry.hub.docker.com/u/pierremage/spark/)
 
 
 This repository contains a Docker file to build a Docker image with Apache Spark. This Docker image depends on our previous [Hadoop Docker](https://github.com/sequenceiq/hadoop-docker) image, available at the SequenceIQ [GitHub](https://github.com/sequenceiq) page.
@@ -10,12 +10,12 @@ The base Hadoop Docker image is also available as an official [Docker image](htt
 
 ##Pull the image from Docker Repository
 ```
-docker pull sequenceiq/spark:1.6.0
+docker pull pierremage/spark:2.0.0
 ```
 
 ## Building the image
 ```
-docker build --rm -t sequenceiq/spark:1.6.0 .
+docker build -t pierremage/spark:2.0.0 .
 ```
 
 ## Running the image
@@ -24,16 +24,16 @@ docker build --rm -t sequenceiq/spark:1.6.0 .
 * in your /etc/hosts file add $(boot2docker ip) as host 'sandbox' to make it easier to access your sandbox UI
 * open yarn UI ports when running container
 ```
-docker run -it -p 8088:8088 -p 8042:8042 -p 4040:4040 -h sandbox sequenceiq/spark:1.6.0 bash
+docker run -it -p 8088:8088 -p 8042:8042 -p 4040:4040 -h sandbox pierremage/spark:2.0.0 bash
 ```
 or
 ```
-docker run -d -h sandbox sequenceiq/spark:1.6.0 -d
+docker run -d -h sandbox pierremage/spark:2.0.0 -d
 ```
 
 ## Versions
 ```
-Hadoop 2.6.0 and Apache Spark v1.6.0 on Centos
+Hadoop 2.7.2 and Apache Spark v2.0.0 on Centos
 ```
 
 ## Testing
@@ -47,7 +47,8 @@ In yarn-client mode, the driver runs in the client process, and the application 
 ```
 # run the spark shell
 spark-shell \
---master yarn-client \
+--master yarn \
+--deploy-mode client \
 --driver-memory 1g \
 --executor-memory 1g \
 --executor-cores 1
@@ -67,11 +68,12 @@ Estimating Pi (yarn-cluster mode):
 spark-submit \
 --class org.apache.spark.examples.SparkPi \
 --files $SPARK_HOME/conf/metrics.properties \
---master yarn-cluster \
+--master yarn \
+--deploy-mode cluster \
 --driver-memory 1g \
 --executor-memory 1g \
 --executor-cores 1 \
-$SPARK_HOME/lib/spark-examples-1.6.0-hadoop2.6.0.jar
+$SPARK_HOME/examples/jars/spark-examples_2.11-2.0.0.jar
 ```
 
 Estimating Pi (yarn-client mode):
@@ -80,11 +82,12 @@ Estimating Pi (yarn-client mode):
 # execute the the following command which should print the "Pi is roughly 3.1418" to the screen
 spark-submit \
 --class org.apache.spark.examples.SparkPi \
---master yarn-client \
+--master yarn \
+--deploy-mode client \
 --driver-memory 1g \
 --executor-memory 1g \
 --executor-cores 1 \
-$SPARK_HOME/lib/spark-examples-1.6.0-hadoop2.6.0.jar
+$SPARK_HOME/examples/jars/spark-examples_2.11-2.0.0.jar
 ```
 
 ### Submitting from the outside of the container
