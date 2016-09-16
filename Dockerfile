@@ -1,6 +1,14 @@
 FROM pierremage/hadoop:2.7.2
 MAINTAINER SequenceIQ
 
+# Install jq
+RUN yum -y install wget
+RUN cd /opt \
+      && mkdir jq \
+      && wget -O ./jq/jq http://stedolan.github.io/jq/download/linux64/jq \
+      && chmod +x ./jq/jq \
+      && ln -s /opt/jq/jq /usr/local/bin
+
 #support for Hadoop 2.7.2
 RUN curl -s http://d3kbcqa49mib13.cloudfront.net/spark-2.0.0-bin-hadoop2.7.tgz | tar -xz -C /usr/local/
 RUN cd /usr/local && ln -s spark-2.0.0-bin-hadoop2.7 spark
@@ -30,3 +38,6 @@ ENV LD_LIBRARY_PATH $HADOOP_PREFIX/lib/native
 #RUN yum -y install R
 
 ENTRYPOINT ["/etc/bootstrap.sh"]
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+ CMD $SPARK_HOME/yarn-remote-client/yarn_is_ready.sh
